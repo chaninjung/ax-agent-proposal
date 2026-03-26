@@ -242,6 +242,9 @@ function renderMessages() {
 }
 
 function formatMarkdown(text) {
+  // Remove thinking tags from Haiku
+  text = text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+
   // If text contains raw HTML tags (from Dify), extract and preserve them
   const htmlBlocks = [];
   let processed = text.replace(/<a\s[^>]*>.*?<\/a>/gi, (match) => {
@@ -365,8 +368,11 @@ async function sendMessage() {
             const d = JSON.parse(line.substring(6));
             if (d.event === "agent_message" || d.event === "message") {
               botText += d.answer || "";
-              typingDiv.querySelector(".content").innerHTML = formatMarkdown(botText);
-              msgEl.scrollTop = msgEl.scrollHeight;
+              var displayText = botText.replace(/<think>[\s\S]*?<\/think>/g, '').replace(/<think>[\s\S]*/g, '').trim();
+              if (displayText) {
+                typingDiv.querySelector(".content").innerHTML = formatMarkdown(displayText);
+                msgEl.scrollTop = msgEl.scrollHeight;
+              }
             }
             if (d.event === "error") {
               botText = "⚠️ 오류가 발생했습니다: " + (d.message || "알 수 없는 오류") + "\n\n잠시 후 다시 시도해주세요.";
