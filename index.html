@@ -144,6 +144,7 @@ body { font-family:'Inter','Malgun Gothic',-apple-system,sans-serif; height:100v
 <script>
 const DIFY_API = "https://api.dify.ai/v1/chat-messages";
 const DIFY_KEY = "app-424rkWacx9iO1gV3iPmDRjq0";
+const USER_ID = localStorage.getItem("ax_user_id") || (() => { const id = "user-" + Date.now() + "-" + Math.random().toString(36).slice(2,8); localStorage.setItem("ax_user_id", id); return id; })();
 
 let conversations = JSON.parse(localStorage.getItem("ax_convos") || "[]");
 let currentConvo = null;
@@ -343,7 +344,7 @@ async function sendMessage() {
         query: text,
         response_mode: "streaming",
         conversation_id: currentConvo.difyConvoId || "",
-        user: "web-user"
+        user: USER_ID
       })
     });
 
