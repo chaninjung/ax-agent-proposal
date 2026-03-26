@@ -129,18 +129,7 @@ body { font-family:'Inter','Malgun Gothic',-apple-system,sans-serif; height:100v
       <span class="badge">Dify Agent</span>
     </div>
   </div>
-  <div class="messages" id="messages">
-    <div class="welcome" id="welcome">
-      <div class="welcome-icon">🤖</div>
-      <h2>무엇을 도와드릴까요?</h2>
-      <p>AI 교육 제안서, 교육자료, 커리큘럼을 만들어 드립니다</p>
-      <div class="suggestions">
-        <div class="suggestion" onclick="sendSuggestion(this)">대상그룹 청정원 AI 리터러시 교육 제안서 만들어줘</div>
-        <div class="suggestion" onclick="sendSuggestion(this)">현대엔지니어링 실무자 대상 생성형 AI 활용 교육자료</div>
-        <div class="suggestion" onclick="sendSuggestion(this)">GS리테일 전사 AI 업무 자동화 커리큘럼 설계해줘</div>
-      </div>
-    </div>
-  </div>
+  <div class="messages" id="messages"></div>
   <div class="input-area">
     <div class="input-wrap">
       <textarea id="userInput" rows="1" placeholder="메시지를 입력하세요..." onkeydown="handleKey(event)"></textarea>
@@ -227,14 +216,19 @@ function renderChatList() {
 
 function renderMessages() {
   const el = document.getElementById("messages");
-  const welcome = document.getElementById("welcome");
   if (!currentConvo || currentConvo.messages.length === 0) {
-    el.innerHTML = "";
-    el.appendChild(welcome);
-    welcome.style.display = "flex";
+    el.innerHTML = `<div class="welcome">
+      <div class="welcome-icon">🤖</div>
+      <h2>무엇을 도와드릴까요?</h2>
+      <p>AI 교육 제안서, 교육자료, 커리큘럼을 만들어 드립니다</p>
+      <div class="suggestions">
+        <div class="suggestion" onclick="sendSuggestion(this)">대상그룹 청정원 AI 리터러시 교육 제안서 만들어줘</div>
+        <div class="suggestion" onclick="sendSuggestion(this)">현대엔지니어링 실무자 대상 생성형 AI 활용 교육자료</div>
+        <div class="suggestion" onclick="sendSuggestion(this)">GS리테일 전사 AI 업무 자동화 커리큘럼 설계해줘</div>
+      </div>
+    </div>`;
     return;
   }
-  welcome.style.display = "none";
   el.innerHTML = currentConvo.messages.map(m => `
     <div class="msg ${m.role}">
       <div class="meta">
@@ -297,8 +291,6 @@ async function sendMessage() {
   if (!text || isStreaming) return;
 
   if (!currentConvo) newChat();
-
-  document.getElementById("welcome").style.display = "none";
 
   currentConvo.messages.push({ role: "user", text });
   if (currentConvo.title === "새 대화") {
