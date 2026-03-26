@@ -1,0 +1,58 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PPT Generator API",
+    "version": "1.0.0",
+    "description": "AI 교육 제안서 PPT를 자동 생성하는 API"
+  },
+  "servers": [
+    { "url": "https://ax-agent-proposal.vercel.app" }
+  ],
+  "paths": {
+    "/api/generate-ppt": {
+      "post": {
+        "operationId": "generatePPT",
+        "summary": "교육 제안서 PPT 생성",
+        "description": "고객사 정보를 입력받아 맞춤형 교육 제안서 PPT를 생성합니다",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["client", "industry", "topic", "target"],
+                "properties": {
+                  "client": { "type": "string", "description": "고객사명" },
+                  "industry": { "type": "string", "description": "산업 분야" },
+                  "topic": { "type": "string", "description": "교육 주제" },
+                  "target": { "type": "string", "description": "교육 대상" },
+                  "duration": { "type": "string", "description": "교육 시간" },
+                  "date": { "type": "string", "description": "교육 일정" },
+                  "ciColor": { "type": "string", "description": "고객사 CI 색상 hex코드 (# 없이)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PPT 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "fileName": { "type": "string" },
+                    "downloadUrl": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

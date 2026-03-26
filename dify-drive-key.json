@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "pickpert-469714",
+  "private_key_id": "f569bf1bb20e3c9972de9e329819f6a46aa3125b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDyFcZbUPFEAMQq\nphG4bXXhFQ/bOYnRV3HvN1D8QkuZXY6FsrOO/J5vJWnmESFrNdcD+it0qTxpLnd/\nQA4hvC6Fe8ntAEr0hxUHrh7FH0LQvZnaEOlWZ4Ta6TKDyReib0qx4zuLAlFDx3rS\n1JsyhY8ynexuLbZBEzxKZ15i6JUXnFMMbELYlfgXEaXKQy1+qh1lgF+Ex/BGUFG4\nx70A+hXMf3JniFiamAjGAhSk8T8AwaaJTRrQc0/YSbHBUZoVGxAAiupH5ZmtVq2V\nztjH5mEMD2mTdkJL8qVEq5PaGpmoHQweyRcvPFX4j99l33VD+Dn2H7LP+1+nbSVc\n/Q6/YNEJAgMBAAECggEAZI7k+VOTFJNY6PpYzAoz+A4+quqos9umCR8qNc74BjnV\nlPXZHmETEsowxg+BmT4hFZbabDhMTsitfJ9H/31iubHk+9yuRgrCkpEiWPGWWI0Z\nlnqF4o1Xo3NQt2tVtPSTy3a/agvJY+U9wMvtt7vA8t6kslOsrDVoSuPLUjyYidhn\nx7Wbhfk1GN8dA0Dg/2j7nrCafCoeqk0SgPkfMrm+r6SOv+TLk9GtU0WMsZYClSy2\nxQe+iSjm2bGl6RE5ILpS1JzmXxznGXJQzr+GzNIM9ngo9j0uhCcoPsKsll06oAJK\n3+gVucAlo2fX9a0pErmN1b2zMT1F2fBxVyg+AMgPXQKBgQD/dGmnPLh+JkmHHL/f\nebrhdjEi6pqo1b4B5vrMj9yQofKr3jiHWpNC1G3YACR1Y+hDC5U4KmJukgfLlfqX\nW8GpHnle2Rfo7CfaT8RNJQk8BTHus1cHnrldu+TaxwRhqSsoWUhTcSbP0Aw1c7LL\nuTskQYPAnqvJ1g3D6VHaSDqAYwKBgQDymg57kIk8fsvOpdv2KB+uqhYA4+Wm3Zx4\nQWiUgvlDvYBBX8eIa9G384bdcDKjf08bKMwKs0/R0YEf6VCAWZrRp5HoJ4BN8gqN\naX2MhrqiemsFqaAjk+cAcTYIWSzVwuvOerloQR41ozrDFj8RYUML1o+xir8FAa1d\nJg26KMJGowKBgF4lMB7zUOclAyopXUlmGoqnPXqpza/1fh5DWyDy0A35sW7H6jtw\nFR+nHIhjnQwqctnqtebKMBah+P992anYpinG0mIzTg2IozNg/G6V/K5DF+Dp9WQY\niiZSbgh3GlVHvGEVboNaCzzBZw54Amf0byhwgLcHgzZSjiYqogD5Z54TAoGBAJ8t\n2BzZXEKWS7G+gBIGh6s6LI/O+KtBM15wRGdVfKom19WNO8XWQNe68R2wdXlzmfsP\nDLpkpxXbqia/FrPwlzXDBmhWKsh57NSWh+tBp4neWwRvJQTTEbnnjnVx1Yo4iDKF\nscunFmRJQtAoc586uxw0Xzo1+FoXnKHGyzD/d2GTAoGBAKNCoRNiFWOVrnQr8UHD\nCb7/T6uRli1l01+xGu3Ud7nwM166R7Hf5EXhe9OZDbnfa0NhW02K2KSfgO1v7e09\nYd64bTABy2v9t9N+Ec7tCT3P6Qtdfkpt1h5h1Hrh8ynajbjInDKWIBiJW43Q1EVF\nJV2W3Au89bWTKYKwdGsBKJZ4\n-----END PRIVATE KEY-----\n",
+  "client_email": "dify-drive@pickpert-469714.iam.gserviceaccount.com",
+  "client_id": "101631374572229372713",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dify-drive%40pickpert-469714.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
