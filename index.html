@@ -55,9 +55,9 @@ body { font-family:'Inter','Malgun Gothic',-apple-system,sans-serif; height:100v
 .msg.user .content { color:#e0e0e0; background:#1a1a1a; padding:14px 18px; border-radius:12px; margin-left:36px; }
 
 /* Markdown styles */
-.msg .content table { border-collapse:collapse; margin:12px 0; width:100%; border-radius:8px; overflow:hidden; }
-.msg .content th, .msg .content td { border:1px solid #333; padding:8px 12px; font-size:13px; text-align:left; }
-.msg .content th { background:#1a1a1a; color:#FF6B2C; font-weight:600; }
+.msg .content table { border-collapse:collapse; margin:12px 0; width:100%; border-radius:8px; overflow:hidden; display:block; overflow-x:auto; }
+.msg .content th, .msg .content td { border:1px solid #333; padding:8px 12px; font-size:12px; text-align:left; white-space:nowrap; min-width:80px; }
+.msg .content th { background:#1a1a1a; color:#FF6B2C; font-weight:600; position:sticky; top:0; }
 .msg .content td { background:#111; }
 .msg .content strong { color:#FF8F5E; }
 .msg .content code { background:#1a1a1a; padding:2px 6px; border-radius:4px; font-size:13px; color:#FF8F5E; font-family:'Consolas',monospace; }
@@ -242,13 +242,28 @@ function renderMessages() {
 }
 
 function formatMarkdown(text) {
-  let html = escapeHtml(text);
+  // If text contains raw HTML tags (from Dify), extract and preserve them
+  const htmlBlocks = [];
+  let processed = text.replace(/<a\s[^>]*>.*?<\/a>/gi, (match) => {
+    htmlBlocks.push(match);
+    return `__HTML_BLOCK_${htmlBlocks.length - 1}__`;
+  });
+
+  let html = escapeHtml(processed);
+
+  // Restore HTML blocks
+  htmlBlocks.forEach((block, i) => {
+    // Make download links styled as buttons
+    let styled = block.replace(/<a\s/g, '<a style="display:inline-block;background:#FF6B2C;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;margin:8px 0;" ');
+    html = html.replace(`__HTML_BLOCK_${i}__`, styled);
+  });
+
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
   html = html.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
   html = html.replace(/^---$/gm, '<hr>');
   html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#FF6B2C;">$1</a>');
   html = html.replace(/\|(.+)\|\n\|[-| ]+\|\n((?:\|.+\|\n?)*)/g, (match, header, body) => {
     const ths = header.split('|').filter(s=>s.trim()).map(s=>`<th>${s.trim()}</th>`).join('');
     const rows = body.trim().split('\n').map(row => {
@@ -306,7 +321,7 @@ async function sendMessage() {
   const msgEl = document.getElementById("messages");
   const typingDiv = document.createElement("div");
   typingDiv.className = "msg bot";
-  typingDiv.innerHTML = `<div class="meta"><div class="avatar">🤖</div><div class="name">AX 어시스턴트</div></div><div class="content"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  typingDiv.innerHTML = `<div class="meta"><div class="avatar">🤖</div><div class="name">AX 어시스턴트</div></div><div class="content"><div class="typing"><span></span><span></span><span></span></div><div style="font-size:12px;color:#666;margin-top:6px;">응답을 생성하고 있습니다...</div></div>`;
   msgEl.appendChild(typingDiv);
   msgEl.scrollTop = msgEl.scrollHeight;
 
@@ -353,6 +368,10 @@ async function sendMessage() {
               typingDiv.querySelector(".content").innerHTML = formatMarkdown(botText);
               msgEl.scrollTop = msgEl.scrollHeight;
             }
+            if (d.event === "error") {
+              botText = "⚠️ 오류가 발생했습니다: " + (d.message || "알 수 없는 오류") + "\n\n잠시 후 다시 시도해주세요.";
+              typingDiv.querySelector(".content").innerHTML = formatMarkdown(botText);
+            }
             if (d.conversation_id) {
               currentConvo.difyConvoId = d.conversation_id;
             }
@@ -361,10 +380,14 @@ async function sendMessage() {
       }
     }
 
+    if (!botText) botText = "⚠️ 응답을 받지 못했습니다. 잠시 후 다시 시도해주세요.";
     currentConvo.messages.push({ role: "bot", text: botText });
     save();
+    renderMessages();
   } catch(e) {
-    typingDiv.querySelector(".content").innerHTML = "⚠️ 오류가 발생했습니다. 다시 시도해주세요.";
+    typingDiv.querySelector(".content").innerHTML = "⚠️ 네트워크 오류가 발생했습니다. 다시 시도해주세요.";
+    currentConvo.messages.push({ role: "bot", text: "⚠️ 네트워크 오류가 발생했습니다." });
+    save();
     console.error(e);
   }
 
