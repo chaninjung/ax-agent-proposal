@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AX 제안서 어시스턴트 | 캐럿글로벌</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Malgun Gothic', -apple-system, sans-serif; height:100vh; display:flex; background:#1a1a2e; color:#e0e0e0; }
+
+/* Sidebar */
+.sidebar { width:260px; background:#16213e; display:flex; flex-direction:column; border-right:1px solid #2a2a4a; }
+.sidebar-header { padding:16px; border-bottom:1px solid #2a2a4a; }
+.sidebar-header h2 { font-size:14px; color:#FF6B2C; margin-bottom:4px; }
+.sidebar-header p { font-size:11px; color:#888; }
+.new-chat-btn { margin:12px 16px; padding:10px; background:#FF6B2C; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; transition:background 0.2s; }
+.new-chat-btn:hover { background:#e55a1b; }
+.chat-list { flex:1; overflow-y:auto; padding:8px; }
+.chat-item { padding:10px 12px; border-radius:8px; cursor:pointer; font-size:13px; color:#ccc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:background 0.2s; }
+.chat-item:hover { background:#1a2744; }
+.chat-item.active { background:#1a2744; color:#FF6B2C; }
+.chat-item .time { font-size:10px; color:#666; margin-top:2px; }
+
+/* Main */
+.main { flex:1; display:flex; flex-direction:column; }
+.main-header { padding:14px 24px; background:#16213e; border-bottom:1px solid #2a2a4a; display:flex; align-items:center; justify-content:space-between; }
+.main-header h1 { font-size:16px; color:#fff; }
+.main-header .badge { font-size:10px; background:#FF6B2C; color:#fff; padding:2px 8px; border-radius:10px; }
+
+/* Messages */
+.messages { flex:1; overflow-y:auto; padding:24px; }
+.messages::-webkit-scrollbar { width:6px; }
+.messages::-webkit-scrollbar-thumb { background:#333; border-radius:3px; }
+.msg { display:flex; gap:12px; margin-bottom:20px; max-width:85%; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.msg.user { margin-left:auto; flex-direction:row-reverse; }
+.msg .avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.msg.bot .avatar { background:#FF6B2C; color:#fff; }
+.msg.user .avatar { background:#4a5568; color:#fff; }
+.msg .bubble { padding:12px 16px; border-radius:12px; font-size:14px; line-height:1.7; }
+.msg.bot .bubble { background:#1e2a3a; color:#e0e0e0; border-bottom-left-radius:4px; }
+.msg.user .bubble { background:#FF6B2C; color:#fff; border-bottom-right-radius:4px; }
+.msg .bubble table { border-collapse:collapse; margin:8px 0; width:100%; }
+.msg .bubble th, .msg .bubble td { border:1px solid #444; padding:6px 10px; font-size:13px; text-align:left; }
+.msg .bubble th { background:#2a3a4a; }
+.msg .bubble strong { color:#FF6B2C; }
+.msg .bubble code { background:#2a2a4a; padding:1px 4px; border-radius:3px; font-size:13px; }
+.msg .bubble h3 { margin:8px 0 4px; color:#FF6B2C; font-size:15px; }
+.msg .bubble ul, .msg .bubble ol { padding-left:20px; margin:4px 0; }
+.msg .bubble li { margin:2px 0; }
+
+/* Typing indicator */
+.typing { display:flex; gap:4px; padding:8px 16px; }
+.typing span { width:8px; height:8px; background:#FF6B2C; border-radius:50%; animation:bounce 1.4s infinite; }
+.typing span:nth-child(2) { animation-delay:0.2s; }
+.typing span:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-8px); } }
+
+/* Input */
+.input-area { padding:16px 24px; background:#16213e; border-top:1px solid #2a2a4a; }
+.input-wrap { display:flex; gap:8px; align-items:center; background:#1a1a2e; border:1px solid #2a2a4a; border-radius:12px; padding:4px 4px 4px 16px; transition:border-color 0.2s; }
+.input-wrap:focus-within { border-color:#FF6B2C; }
+.input-wrap input { flex:1; background:none; border:none; outline:none; color:#e0e0e0; font-size:14px; padding:8px 0; font-family:inherit; }
+.input-wrap input::placeholder { color:#666; }
+.send-btn { width:36px; height:36px; background:#FF6B2C; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+.send-btn:hover { background:#e55a1b; }
+.send-btn:disabled { background:#444; cursor:not-allowed; }
+.send-btn svg { fill:#fff; width:18px; height:18px; }
+
+/* Welcome screen */
+.welcome { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; }
+.welcome h2 { font-size:24px; color:#FF6B2C; margin-bottom:8px; }
+.welcome p { color:#888; font-size:14px; margin-bottom:24px; }
+.welcome .suggestions { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+.welcome .suggestion { padding:10px 16px; background:#1e2a3a; border:1px solid #2a2a4a; border-radius:8px; color:#ccc; font-size:13px; cursor:pointer; transition:all 0.2s; }
+.welcome .suggestion:hover { border-color:#FF6B2C; color:#FF6B2C; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>🥕 캐럿글로벌</h2>
+    <p>AX 제안서 어시스턴트</p>
+  </div>
+  <button class="new-chat-btn" onclick="newChat()">+ 새 대화</button>
+  <div class="chat-list" id="chatList"></div>
+</div>
+
+<div class="main">
+  <div class="main-header">
+    <h1>AX 제안서 어시스턴트</h1>
+    <span class="badge">Claude Sonnet 4</span>
+  </div>
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <h2>무엇을 도와드릴까요?</h2>
+      <p>AI 교육 제안서, 교육자료, 커리큘럼을 만들어 드립니다</p>
+      <div class="suggestions">
+        <div class="suggestion" onclick="sendSuggestion(this)">대상그룹 AI 교육 제안서 만들어줘</div>
+        <div class="suggestion" onclick="sendSuggestion(this)">현대엔지니어링 교육자료 만들어줘</div>
+        <div class="suggestion" onclick="sendSuggestion(this)">GS리테일 AI 리터러시 커리큘럼</div>
+      </div>
+    </div>
+  </div>
+  <div class="input-area">
+    <div class="input-wrap">
+      <input type="text" id="userInput" placeholder="메시지를 입력하세요..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DIFY_API = "https://api.dify.ai/v1/chat-messages";
+const DIFY_KEY = "app-424rkWacx9iO1gV3iPmDRjq0";
+
+let conversations = JSON.parse(localStorage.getItem("ax_convos") || "[]");
+let currentConvo = null;
+let isStreaming = false;
+
+function init() {
+  renderChatList();
+  if (conversations.length > 0) {
+    loadConvo(conversations[0].id);
+  }
+}
+
+function newChat() {
+  const convo = {
+    id: "c_" + Date.now(),
+    title: "새 대화",
+    difyConvoId: "",
+    messages: [],
+    createdAt: new Date().toLocaleString("ko-KR", { hour:"2-digit", minute:"2-digit" })
+  };
+  conversations.unshift(convo);
+  save();
+  loadConvo(convo.id);
+}
+
+function loadConvo(id) {
+  currentConvo = conversations.find(c => c.id === id);
+  renderChatList();
+  renderMessages();
+}
+
+function renderChatList() {
+  const list = document.getElementById("chatList");
+  list.innerHTML = conversations.map(c =>
+    `<div class="chat-item ${currentConvo && currentConvo.id === c.id ? 'active' : ''}" onclick="loadConvo('${c.id}')">
+      ${c.title}
+      <div class="time">${c.createdAt}</div>
+    </div>`
+  ).join("");
+}
+
+function renderMessages() {
+  const el = document.getElementById("messages");
+  const welcome = document.getElementById("welcome");
+  if (!currentConvo || currentConvo.messages.length === 0) {
+    el.innerHTML = "";
+    el.appendChild(welcome);
+    welcome.style.display = "flex";
+    return;
+  }
+  welcome.style.display = "none";
+  el.innerHTML = currentConvo.messages.map(m => `
+    <div class="msg ${m.role}">
+      <div class="avatar">${m.role === "bot" ? "🤖" : "👤"}</div>
+      <div class="bubble">${m.role === "bot" ? formatMarkdown(m.text) : escapeHtml(m.text)}</div>
+    </div>
+  `).join("");
+  el.scrollTop = el.scrollHeight;
+}
+
+function formatMarkdown(text) {
+  // Simple markdown to HTML
+  let html = escapeHtml(text);
+  // Bold
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Headers
+  html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*?)$/gm, '<h3>$1</h3>');
+  // Code
+  html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+  // Tables
+  html = html.replace(/\|(.+)\|\n\|[-| ]+\|\n((?:\|.+\|\n?)*)/g, (match, header, body) => {
+    const ths = header.split('|').filter(s=>s.trim()).map(s => `<th>${s.trim()}</th>`).join('');
+    const rows = body.trim().split('\n').map(row => {
+      const tds = row.split('|').filter(s=>s.trim()).map(s => `<td>${s.trim()}</td>`).join('');
+      return `<tr>${tds}</tr>`;
+    }).join('');
+    return `<table><tr>${ths}</tr>${rows}</table>`;
+  });
+  // Lists
+  html = html.replace(/^- (.*?)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+  // Line breaks
+  html = html.replace(/\n/g, '<br>');
+  // Clean up double ul
+  html = html.replace(/<\/ul>\s*<ul>/g, '');
+  return html;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function sendSuggestion(el) {
+  if (!currentConvo) newChat();
+  document.getElementById("userInput").value = el.textContent;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if (!text || isStreaming) return;
+
+  if (!currentConvo) newChat();
+
+  // Hide welcome
+  document.getElementById("welcome").style.display = "none";
+
+  // Add user message
+  currentConvo.messages.push({ role: "user", text });
+  if (currentConvo.messages.length === 1) {
+    currentConvo.title = text.substring(0, 30) + (text.length > 30 ? "..." : "");
+  }
+  save();
+  renderMessages();
+  renderChatList();
+  input.value = "";
+
+  // Show typing
+  const msgEl = document.getElementById("messages");
+  const typingDiv = document.createElement("div");
+  typingDiv.className = "msg bot";
+  typingDiv.innerHTML = `<div class="avatar">🤖</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  msgEl.appendChild(typingDiv);
+  msgEl.scrollTop = msgEl.scrollHeight;
+
+  isStreaming = true;
+  document.getElementById("sendBtn").disabled = true;
+
+  try {
+    const resp = await fetch(DIFY_API, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${DIFY_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: {},
+        query: text,
+        response_mode: "streaming",
+        conversation_id: currentConvo.difyConvoId || "",
+        user: "web-user"
+      })
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let botText = "";
+    let buffer = "";
+
+    // Replace typing with actual response
+    typingDiv.querySelector(".bubble").innerHTML = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        if (line.startsWith("data: ")) {
+          try {
+            const d = JSON.parse(line.substring(6));
+            if (d.event === "agent_message" || d.event === "message") {
+              botText += d.answer || "";
+              typingDiv.querySelector(".bubble").innerHTML = formatMarkdown(botText);
+              msgEl.scrollTop = msgEl.scrollHeight;
+            }
+            if (d.conversation_id) {
+              currentConvo.difyConvoId = d.conversation_id;
+            }
+          } catch(e) {}
+        }
+      }
+    }
+
+    currentConvo.messages.push({ role: "bot", text: botText });
+    save();
+  } catch(e) {
+    typingDiv.querySelector(".bubble").innerHTML = "⚠️ 오류가 발생했습니다. 다시 시도해주세요.";
+    console.error(e);
+  }
+
+  isStreaming = false;
+  document.getElementById("sendBtn").disabled = false;
+}
+
+function save() {
+  localStorage.setItem("ax_convos", JSON.stringify(conversations));
+}
+
+init();
+</script>
+</body>
+</html>
